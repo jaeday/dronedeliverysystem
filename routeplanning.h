@@ -64,46 +64,13 @@ public:
                 ((p1.x == 0) && (p1.y == 0)));
     }
 
-    void fill_adjMat(const vector<point>& points){
-        adjMat.resize(points.size());
-        for(size_t i = 0; i < points.size(); ++i){
-            adjMat[i].resize(points.size());
-            for(size_t j = 0; j < points.size(); ++j){
-                if(i == j){
-                    adjMat[i][j] = numeric_limits<double>::infinity();
-                }
-                else if((points[i].cat == Cat::medical && points[j].cat == Cat::none) ||
-                (points[i].cat == Cat::none && points[j].cat == Cat::medical)){
-                    adjMat[i][j] = numeric_limits<double>::infinity();
-                }
-                else{
-                    adjMat[i][j] = dist(points[i], points[j]);
-                }
-            }
-        }
-    }
-
-
-    void pointsPrint();
-    void adjMatPrint();
-//--------------------------------------------------------------------------------------PART A MST--------------------------------------------------------------------------------------
-    void primPreProcessing(vector<point>& vec);
-    double primProcessing();
-    void mstOutput();
     int findSmallest(vector<vertex>& vec);
-    //testing purpose only 
-    void primDSPrint();
 
-//------------------------------------------------------------------------------------PART B FASTTSP--------------------------------------------------------------------------------------
 
     double insertionCost(point p1, point p2, point p3);
     void arbitraryInsertion();
     int findTriDist(size_t i);
-    void printFAST();
 
-    
-
-//--------------------------------------------------------------------------------------PART C TSP--------------------------------------------------------------------------------------
     double primProcessingOPT(size_t permLength);
 
     bool promising(size_t permLength);
@@ -137,7 +104,7 @@ public:
     void OPTPrint(){
         cout << distBest << '\n';
         for(auto x : BESTPath){
-            cout << x << " ";
+            cout << " " << points[x].x << " " << points[x].y << '\n';
         }
     }
 
@@ -175,7 +142,6 @@ private:
     vector<vertex> unvisitedPrim;
     vector<int> BESTPath;
     vector<int> OPTPath;
-    vector< vector<double>> adjMat;
     double distBest = 0;
     double currDist = 0;
 

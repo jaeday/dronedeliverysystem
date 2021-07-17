@@ -9,7 +9,7 @@
 #include <stack>
 #include <cmath>
 #include <ctype.h>
-#include "drone.h"
+#include "routeplanning.h"
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -25,23 +25,9 @@ int main(int argc, char** argv) {
 
         lmao.readInput();
 
-
-        if(lmao.mstMode == true){
-            lmao.primProcessing();
-            return 0;
-        }
-
-        else if(lmao.fastMode == true){
-            lmao.arbitraryInsertion();
-            lmao.printFAST();
-            return 0;
-        }
-        
-        else if(lmao.optMode == true){
-            lmao.OPTTSP();
-            lmao.OPTPrint();
-            return 0;
-        }
+        lmao.OPTTSP();
+        lmao.OPTPrint();
+        return 0;
 
 
         

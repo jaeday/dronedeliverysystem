@@ -10,7 +10,7 @@
 #include <fstream>
 #include <stdio.h>
 #include <iomanip>
-#include "drone.h"
+#include "routeplanning.h"
 using namespace std;
 
 void controlcenter::get_options(int argc, char** argv){
@@ -28,15 +28,10 @@ void controlcenter::get_options(int argc, char** argv){
     while ((option = getopt_long(argc, argv, "m:h", longOpts, &option_index)) != -1) {
         switch (option) {
             case 'h':
-                std::cout << "This program reads a txt file that contains either castle map,\n"
-                          << " or coordinate lists of significant objects in the castle\n"
-                          <<  "for Marco.  It then outputs the strategy for Marco to save Princess\n"
-                          <<  "Cherry in the command line arguments (the print option), which\n"
-                          <<  "defaults to 2, sorted by the option specified (one of name,\n"
-                          <<  "artist, or listens).\n"
-                          <<  "Usage: \'./superMarco\n\t[--output | -o (M|L)] <output Map/List>\n"
-                          <<                      "\t[--stack | -s] <use stack method>\n"
-                          <<                      "\t[--queue | -q] <use queue method>\n"
+                std::cout << "This program reads a txt file that contains a list of delivery \n"
+                          << "coordinates for coffee orders. It then outputs the order for the drone \n"
+                          <<  "to go, in the most optimal way to save energy and time. \n"
+                          <<  "Usage: \'./drone\n\t[--stack | -m] <initialize method>\n"
                           <<                      "\t[--help | -h]\n"
                           <<                      "\t< <txt Map/List Input>\n'"
                             <<                      "\t> <txt Map/List Output>\n'";
@@ -44,10 +39,8 @@ void controlcenter::get_options(int argc, char** argv){
 
             case 'm':
                 string a = optarg;
-                if(a == "MST"){mstMode = true;}
-                else if(a == "FASTTSP"){fastMode = true;}
-                else if(a == "OPTTSP"){optMode = true;}
-                else if(!(a == "MST" && a == "OPTTSP" && a == "FASTTSP")){
+                if(a == "OPTTSP"){optMode = true;}
+                else if(a!= "OPTTSP"){
                     throw std::runtime_error("Error: invalid algorithm mode. \n Error in algorithm option, should be either MST or FASTTSP or OPTTSP. Please revisit");
                 }
 
@@ -78,22 +71,6 @@ void controlcenter::readInput(){
     }
 }
 
-void controlcenter::pointsPrint(){
-    cout << points.size() << endl;
-    for(auto x : points){
-        string m;
-        if(x.cat == Cat::medical){
-            m += 'm';
-        }
-        else if(x.cat == Cat::border){
-            m += 'b';
-        }
-        else{
-            m += 'n';
-        }
-        cout << x.x << " " << x.y << " " << m << endl;
-    }
-}
 
 //--------------------------------------------------------------------------------------PART A MST--------------------------------------------------------------------------------------
 int controlcenter::findSmallest(vector<vertex>& vec){
@@ -110,82 +87,6 @@ int controlcenter::findSmallest(vector<vertex>& vec){
     }
 
     return ans;
-}
-
-void controlcenter::primPreProcessing(vector<point>& vec){
-    primDS.resize(vec.size());
-    
-    for(int i = 0; i < int(primDS.size()); ++i){
-        primDS[i].id = int(i);
-    }
-}
-
-void controlcenter::primDSPrint(){
-    cout << "primDS representation:" << endl;
-    cout << "(id, k, d, p)" << endl;
-    for(auto x : primDS){
-        cout << "(" << x.id << ", " << x.k << ", " << x.d << ", "
-             << x.p << ")" << endl;
-    }
-}
-
-
-double controlcenter::primProcessing(){
-    cout << std::setprecision(2);
-    cout << std::fixed;
-    primPreProcessing(points);
-
-
-    double weight = 0.0;
-    primDS[0].d = 0.0;
-
-    for(size_t j = 0; j < primDS.size(); ++j){
-        int v = findSmallest(primDS);
-        primDS[v].k = true;
-        weight += primDS[v].d;
-        for(size_t k = 0; k < primDS.size(); ++k){
-            double distance = 0.0;
-            if(!primDS[k].k){
-                if(v == int(k)){
-                    distance = numeric_limits<double>::infinity();
-                }
-                else if((points[v].cat == Cat::medical && points[k].cat == Cat::none) ||
-                (points[v].cat == Cat::none && points[k].cat == Cat::medical)){
-                    distance = numeric_limits<double>::infinity();
-                }
-                else{
-                    distance = dist(points[v], points[k]);
-                }
-
-                if(primDS[k].d > distance){
-                    
-                    primDS[k].d = distance;
-                    primDS[k].p = v;
-                }
-            }
-            
-        }
-
-    }
-
-    cout << weight << '\n';
-
-    for(size_t a = 0; a < primDS.size(); ++a){
-        if(primDS[a].p > -1){
-            if(primDS[a].p >= int(a)){
-                cout << a << " " << primDS[a].p << '\n';
-            }
-            else{
-                cout << primDS[a].p << " " << a << '\n';
-            }
-        }
-        
-    }
-
-
-    
-    return weight;
-
 }
 
 
@@ -245,15 +146,6 @@ void controlcenter::arbitraryInsertion(){
 
 }
 
-void controlcenter::printFAST(){
-    cout << std::setprecision(2);
-    cout << std::fixed;
-    cout << FASTweight << '\n';
-    for(size_t i = 0; i < FASTpath.size() - 1; ++i){
-        cout << FASTpath[i] << " ";
-    }
-    cout << '\n';
-}
 
 
 //--------------------------------------------------------------------------------------PART C TSP--------------------------------------------------------------------------------------
@@ -270,7 +162,7 @@ double controlcenter::primProcessingOPT(size_t permLength){
     cout << std::setprecision(2);
     cout << std::fixed;
 
-    unvisitedInit(permLength);
+    unvisitedInit(permLength);    
 
     double weight = 0.0;
     unvisitedPrim[0].d = 0.0;
@@ -331,5 +223,4 @@ bool controlcenter::promising(size_t permLength){
         return true;
     }
     return false;
-
 }
