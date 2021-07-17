@@ -37,6 +37,7 @@ listIt = 0
 tempIt = 0
 tempAngle = 0
 print(listOfCoordinates)
+
 while listOfCoordinates.size != 1:
     rotatingAngle = rotateTowardsNext(listOfCoordinates[0], listOfCoordinates[1], tempAngle)
     te.send_rc_control(0,20,0,0)
