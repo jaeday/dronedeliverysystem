@@ -3,6 +3,8 @@ from scipy.spatial import distance
 import math
 import os
 
+inputPath = "./routeplanning/inputfiles"
+
 # TODO: Change this to only perform clockwise rotations
 # TODO: Have drone rotate to an absolute north position before making any rotations
 
@@ -12,17 +14,17 @@ class Point:
     x: float
     y: float
 
+
 class Nav:
 
     def __init__(self) -> None:
         self.coords = []
         self.rotations = []
-        self.travelDist = []
+        self.lastRot = 0
 
 
     def readCoords(self, i) -> None:
-        # TODO: Decide on a filename
-        filename = "coords" + i + ".txt"
+        filename = inputPath + "/input" + str(i) + ".txt"
         coordFile = open(filename, "r")
 
         points = coordFile.readlines()
@@ -78,17 +80,6 @@ class Nav:
                 return -1
 
 
-    """
-    currentCoord and nextCoords are pairs (2-tuples) of ints
-    
-    calculateRot works on a relative system; i.e. the rotations are performed
-    relative to the current direction the drone is facing
-    
-    Note: Negative angles indicate a counterclockewise rotation
-
-    Note: The drone will rotate clockwise unless a counterclockwise rotation
-    is faster
-    """
     def calculateRot(self, currentCoord, nextCoord) -> float:
 
         quadrant = self.getQuadrant(currentCoord, nextCoord)
@@ -102,7 +93,7 @@ class Nav:
         elif quadrant == 7:
             return 180
         elif quadrant == 8:
-            return -90
+            return 270
 
         # fabs(a) returns the absolute value of a
         xDist = math.fabs(nextCoord.x - currentCoord.x)
@@ -117,9 +108,10 @@ class Nav:
             offset = 180
         # quadrant == 4
         else:
-            offset = -90
+            offset = 270
         
-        return offset + math.degrees(math.atan(xDist/ yDist))
+        return (math.degrees(math.atan(xDist/ yDist)) + offset - self.lastRot) % 360
+
 
     def createPath(self) -> None:
 
@@ -128,10 +120,11 @@ class Nav:
         for i in range(0, len(self.coords) - 1):
             nextCoord = self.coords[i + 1]
             rotation = self.calculateRot(currentCoord, nextCoord)
+            self.lastRot = rotation
             currentCoordPair = (currentCoord.x, currentCoord.y)
             nextCoordPair = (nextCoord.x, nextCoord.y)
             dist = distance.euclidean(currentCoordPair, nextCoordPair)
-            print(rotation, " ", dist)
+            self.rotations.append([round(rotation, 2), round(dist, 2)])
 
         # The last link
         # TODO: Find a way to include this in the for loop above
@@ -141,14 +134,16 @@ class Nav:
         currentCoordPair = (currentCoord.x, currentCoord.y)
         nextCoordPair = (nextCoord.x, nextCoord.y)
         dist = distance.euclidean(currentCoordPair, nextCoordPair)
-        print(rotation, " ", dist)
+        self.rotations.append([round(rotation, 2), round(dist, 2)])
 
-n = Nav()
+        for i in self.rotations:
+            print(i)
+        print("")
 
-inputPath = "./routeplanning/inputfiles"
-i = 0
+i = 1
 
 for file in os.listdir(inputPath):
+    n = Nav()
     currentFile = os.path.join(inputPath, file)
     n.readCoords(i)
     i += 1
