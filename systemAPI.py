@@ -8,3 +8,21 @@ from pathlib import Path
 # This script, along with the c++ compilation, will also delete the "used" input file (so deleting the order that's been processed. I guess you can delete the files once
 # the file has been processed by the c++ code maybe after the c++ compilation code)
 # This will then transfer the output from c++ into the outputfiles, and then drone.py will fetch the information from the same directory.
+
+inputPath = "./routeplanning/inputfiles"
+outputPath = "./routeplanning/outputfiles"
+tspCommand = "./route -m OPTTSP"
+
+os.system("make")
+
+i = 0
+outputFile = "/coords"
+
+for file in os.listdir(inputPath):
+    currentFile = os.path.join(inputPath, file)
+    # Runs the C++ TSP code
+    os.system(tspCommand + " < " + currentFile + " > " + outputPath + outputFile + i + ".txt")
+    # Removes the input file
+    # os.system("rm " + currentFile)
+ 
+os.system("make clean")

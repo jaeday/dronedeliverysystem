@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from scipy.spatial import distance
 import math
+import os
 
 # TODO: Change this to only perform clockwise rotations
 # TODO: Have drone rotate to an absolute north position before making any rotations
@@ -19,9 +20,9 @@ class Nav:
         self.travelDist = []
 
 
-    def readCoords(self) -> None:
+    def readCoords(self, i) -> None:
         # TODO: Decide on a filename
-        filename = "coords.txt"
+        filename = "coords" + i + ".txt"
         coordFile = open(filename, "r")
 
         points = coordFile.readlines()
@@ -143,6 +144,12 @@ class Nav:
         print(rotation, " ", dist)
 
 n = Nav()
-n.readCoords()
-n.createPath()
 
+inputPath = "./routeplanning/inputfiles"
+i = 0
+
+for file in os.listdir(inputPath):
+    currentFile = os.path.join(inputPath, file)
+    n.readCoords(i)
+    i += 1
+    n.createPath()
