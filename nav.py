@@ -5,9 +5,6 @@ import os
 
 inputPath = "./routeplanning/inputfiles"
 
-# TODO: Change this to only perform clockwise rotations
-# TODO: Have drone rotate to an absolute north position before making any rotations
-
 # This is like a C struct / C++ POD struct
 @dataclass
 class Point:
@@ -23,7 +20,7 @@ class Nav:
         self.lastRot = 0
 
 
-    def readCoords(self, i) -> None:
+    def readCoords(self, i: int) -> None:
         filename = inputPath + "/input" + str(i) + ".txt"
         coordFile = open(filename, "r")
 
@@ -52,7 +49,7 @@ class Nav:
       3   |   2
           7
     """
-    def getQuadrant(self, currentCoord, nextCoord) -> int:
+    def getQuadrant(self, currentCoord: Point, nextCoord: Point) -> int:
 
         if currentCoord.x < nextCoord.x:
             if currentCoord.y < nextCoord.y:
@@ -80,12 +77,15 @@ class Nav:
                 return -1
 
 
-    def calculateRot(self, currentCoord, nextCoord) -> float:
+    # TODO: Refactor this code:
+    # either remove getQuadrant or use it fully
+    def calculateRot(self, currentCoord: Point, nextCoord: Point) -> float:
 
         quadrant = self.getQuadrant(currentCoord, nextCoord)
 
         # Cases where rotations can be made in multiples of 90°
         # Straight ahead
+
         if quadrant == 5 or quadrant == -1:
             return 0
         elif quadrant == 6:
@@ -93,52 +93,69 @@ class Nav:
         elif quadrant == 7:
             return 180
         elif quadrant == 8:
-            return 270
+            return -90
 
-        # fabs(a) returns the absolute value of a
-        xDist = math.fabs(nextCoord.x - currentCoord.x)
-        yDist = math.fabs(nextCoord.y - currentCoord.y)
-        offset = 0
+        """
+        if both positive: use tan
+        positive x diff, negative y diff: + 90
+        negative x diff, positive y diff: flip sign
+        both negative: - 90
+        """
 
-        if quadrant == 1:
+        xDist = nextCoord.x - currentCoord.x
+        yDist = nextCoord.y - currentCoord.y
+
+        xDistPos = bool(xDist > 0)
+        yDistPos = bool(yDist > 0)
+
+        rotAngle = math.degrees(math.atan(math.fabs(xDist) / math.fabs(yDist)))
+
+        if xDistPos and yDistPos:
             pass
-        elif quadrant == 2:
-            offset = 90
-        elif quadrant == 3:
-            offset = 180
-        # quadrant == 4
+        elif xDistPos and not yDistPos:
+            rotAngle += 90
+        elif not xDistPos and yDistPos:
+            rotAngle *= -1
+        # not xDistPos and yDistPos
         else:
-            offset = 270
-        
-        return (math.degrees(math.atan(xDist/ yDist)) + offset - self.lastRot) % 360
+            rotAngle -= 90
+
+        return rotAngle
 
 
     def createPath(self) -> None:
 
-        currentCoord = self.coords[0]
-
         for i in range(0, len(self.coords) - 1):
+            currentCoord = self.coords[i]
             nextCoord = self.coords[i + 1]
             rotation = self.calculateRot(currentCoord, nextCoord)
             self.lastRot = rotation
+
             currentCoordPair = (currentCoord.x, currentCoord.y)
             nextCoordPair = (nextCoord.x, nextCoord.y)
+
             dist = distance.euclidean(currentCoordPair, nextCoordPair)
-            self.rotations.append([round(rotation, 2), round(dist, 2)])
+
+            self.rotations.append([rotation, dist])
+            self.rotations.append([self.lastRot, 0.0])
+
 
         # The last link
-        # TODO: Find a way to include this in the for loop above
         currentCoord = self.coords[-1]
         nextCoord = self.coords[0]
         rotation = self.calculateRot(currentCoord, nextCoord)
         currentCoordPair = (currentCoord.x, currentCoord.y)
         nextCoordPair = (nextCoord.x, nextCoord.y)
         dist = distance.euclidean(currentCoordPair, nextCoordPair)
-        self.rotations.append([round(rotation, 2), round(dist, 2)])
+        self.rotations.append([rotation, dist])
+        self.rotations.append([self.lastRot, 0.0])
 
+        count = 0
         for i in self.rotations:
-            print(i)
+            print(count, (round(i[0], 2), round(i[1], 2)))
+            count += 1
         print("")
+
 
 i = 1
 
