@@ -16,14 +16,19 @@ tspCommand = "./route -m OPTTSP"
 os.system("make")
 
 i = 0
+deleteMode = False
 outputFile = "/coords"
 
+# Iterates through every file in the inputPath directory
 for file in os.listdir(inputPath):
     currentFile = os.path.join(inputPath, file)
     # Runs the C++ TSP code
-    os.system(tspCommand + " < " + currentFile + " > " + outputPath + outputFile + i + ".txt")
+    os.system(tspCommand + " < " + currentFile + " > " + outputPath + outputFile + str(i) + ".txt")
 
-    # !Removes the input file
-    # os.system("rm " + currentFile)
- 
+    if(deleteMode):
+        os.system("rm " + currentFile)
+
 os.system("make clean")
+
+# Runs nav.py and sends the output to path.txt
+os.system("nav.py > path.txt")
