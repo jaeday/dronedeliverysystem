@@ -1,5 +1,6 @@
 const express = require("express");
 const Coffee = require('./models/coffeeModel')
+const coffeesRoute = require('./routes/coffeesRoute')
 
 const db = require("./db");
 
@@ -11,16 +12,7 @@ app.get("/", (req,res) => {
     res.send("Server working " + port);
 });
 
-app.get("/getcoffees", (req,res) => {
-    Coffee.find({}, (err, docs)=>{
-        if(err){
-            console.log(err);
-        }
-        else{
-            res.send(docs);
-        }
-    })
-});
+app.use('/api/coffees', coffeesRoute)
 
 const port = process.env.PORT || 8000;
 
