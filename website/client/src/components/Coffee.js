@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import {Modal} from 'react-bootstrap'
+import { useDispatch, useSelector } from 'react-redux'
+import { addToCart } from '../actions/cartActions'
 
 export default function Coffee({ coffee }) {
     const [quantity, setquantity] = useState(1)
@@ -8,6 +10,12 @@ export default function Coffee({ coffee }) {
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const dispatch = useDispatch()
+    function addtocart(){
+        dispatch(addToCart(coffee, quantity, size));
+    }
+
     return (
         <div className='shadow-lg p-3 mb-5 bg-white rounded'>
             <div onClick ={handleShow}>
@@ -38,7 +46,7 @@ export default function Coffee({ coffee }) {
                     <h1 className='mt-2'>Price: ${coffee.prices[0][size] * quantity}</h1>
                 </div>
                 <div className='d-flex col-sm flex-row-reverse'>
-                    <button className="btn p-2">ADD TO CART</button>
+                    <button className="btn p-2" onClick ={addtocart}>ADD TO CART</button>
                 </div>
             </div>
             <Modal show={show}>

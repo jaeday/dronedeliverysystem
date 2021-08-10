@@ -42,3 +42,13 @@ select{
   box-shadow: none !important;
   border-color: black !important;
 }
+
+.fa-plus{
+  color:green;
+  margin: 5px;
+}
+
+.fa-minus{
+  color:red;
+  margin: 5px;
+}
