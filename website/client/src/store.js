@@ -1,5 +1,6 @@
 import {combineReducers} from 'redux'
 import { getAllCoffeesReducer } from './reducers/coffeeReducers'
+import { cartReducer } from './reducers/cartReducer'
 import {createStore, applyMiddleware} from 'redux'
 
 import thunk from'redux-thunk'
@@ -8,10 +9,17 @@ import {composeWithDevTools} from 'redux-devtools-extension'
 //import { getAllCoffeesReducer } from './reducers/coffeeReducers'
 
 const finalReducer = combineReducers({
-    getAllCoffeesReducer : getAllCoffeesReducer
+    getAllCoffeesReducer : getAllCoffeesReducer, 
+    cartReducer : cartReducer
 })
 
-const initialState = {}
+const cartItems = localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems')) : []
+
+const initialState = {
+    cartReducer : {
+        cartItems: cartItems
+    }
+}
 
 const composeEnhancers = composeWithDevTools({})
 
