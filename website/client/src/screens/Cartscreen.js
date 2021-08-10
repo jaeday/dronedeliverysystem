@@ -32,6 +32,12 @@ export default function Cartscreen() {
                     </div>
                 </div>
                 })}
+
+                {cartItems.length >= 6 && <div className = "flex-container">
+                    <h1>You are ordering too many coffees at once. As per company policy, we are trying to reduce the delivery time for other students by
+                        limiting the amount of coffees each can order. Please take off some of the coffee and try again.
+                    </h1>
+                    </div>}
                 
             </div>
             <div className = "col-md-4">
