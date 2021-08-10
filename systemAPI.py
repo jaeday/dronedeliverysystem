@@ -23,9 +23,10 @@ outputFile = "/coords"
 for file in os.listdir(inputPath):
     currentFile = os.path.join(inputPath, file)
     # Runs the C++ TSP code
-    os.system(tspCommand + " < " + currentFile + " > " + outputPath + outputFile + str(i) + ".txt")
+    os.system(tspCommand + " < " + currentFile + " > " + outputPath + \
+        outputFile + str(i) + ".txt")
 
-    if(deleteMode):
+    if deleteMode:
         os.system("rm " + currentFile)
 
 os.system("make clean")
