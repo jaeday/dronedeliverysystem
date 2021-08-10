@@ -5,14 +5,33 @@ export const addToCart=(coffee, quantity, size)=> (dispatch, getState)=>{
         _id : coffee._id,
         image : coffee.image,
         size : size,
-        quantity :quantity,
+        quantity : Number(quantity),
         prices: coffee.prices,
         price: coffee.prices[0][size]*quantity
     }
-        dispatch({type:'ADD_TO_CART', payload: cartItem})
+        if(cartItem.quantity>5){
+            alert('You cannot add more than 5 quantities.')
+        }
+        else{
+            if(cartItem.quantity<1){
+                dispatch({type:'DELETE_FROM_CART', payload:coffee})
+            }
+            else{
+                dispatch({type:'ADD_TO_CART', payload: cartItem})
+            }
+            
+        }
+        
 
         const cartItems = getState().cartReducer.cartItems
         console.log(cartItem)
         localStorage.setItem('cartItems', JSON.stringify(cartItems))
     
+}
+
+export const deleteFromCart=(coffee)=>(dispatch, getState)=>{
+    dispatch({type:'DELETE_FROM_CART', payload:coffee})
+    const cartItems = getState().cartReducer.cartItems
+    localStorage.setItem('cartItems', JSON.stringify(cartItems))
+
 }
