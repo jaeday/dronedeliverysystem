@@ -1,12 +1,11 @@
 CXX = g++
-CXXFLAGS = -std=c++1z -O3
-SRCFILES = $(shell pwd)/routeplanning/routeplanning.cpp \
-			$(shell pwd)/routeplanning/interface.cpp
+CXXFLAGS = -std=c++1z -O3 -Wall -Werror -pedantic
+SRCFILE = $(shell pwd)/routeplanning/tsp.cpp
 EXECUTABLE = route
 OBJECTS = *.o *.dSYM
 
 all:
-	$(CXX) $(CXXFLAGS) $(SRCFILES) -o $(EXECUTABLE)
+	$(CXX) $(CXXFLAGS) $(SRCFILE) -o $(EXECUTABLE)
 
 clean:
 	rm $(OBJECTS) $(EXECUTABLE)
