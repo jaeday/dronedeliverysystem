@@ -1,6 +1,8 @@
 import cv2
 from pyzbar import pyzbar
 
+decodedNum = ""
+
 def read_barcodes(frame):
     barcodes = pyzbar.decode(frame)
     for barcode in barcodes:
@@ -15,6 +17,7 @@ def read_barcodes(frame):
         #3
         with open("barcode_result.txt", mode ='w') as file:
             file.write("Recognized Barcode:" + barcode_info)
+        decodedNum = decodedNum + barcode_info
     return frame
 
 def main():
