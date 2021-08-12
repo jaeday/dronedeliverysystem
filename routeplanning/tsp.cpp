@@ -26,15 +26,16 @@ public:
         // Reading in the points to be traversed
         std::cin >> numPoints;
         int x, y;
-        int i = 0;
+        int count = 0;
 
         coords.resize(numPoints);
 
         while(std::cin >> x >> y) {
-            coords[i++] = Coord(x, y);
-            if(i == static_cast<int>(numPoints) - 1) {
+            coords[count] = Coord(x, y);
+            if(count == static_cast<int>(numPoints) - 1) {
                 break;
             }
+            ++count;
         }
 
         // Reading in the no-go zones
@@ -46,9 +47,9 @@ public:
             exit(1);
         }
 
-        std::vector<Coord> temp(NUM_CORNERS);
+        std::vector<Coord> temp;
 
-        for(int i = 0; i < static_cast<int>(numNoGoPoints); ++i) {
+        for(int i = 0; i < static_cast<int>(numNoGoPoints) / 4; ++i) {
             for(int j = 0; j < NUM_CORNERS; ++j) {
                 std::cin >> x >> y;
                 temp.push_back(Coord(x,y));
@@ -125,28 +126,28 @@ private:
         NoGoZone(const std::vector<Coord> &vertices_in) {
 
             assert(vertices_in.size() == NUM_CORNERS);
-            vertices.reserve(NUM_CORNERS);
+            vertices.resize(NUM_CORNERS);
 
             for(int i = 0; i < NUM_CORNERS; ++i) {
                 vertices[i] = vertices_in[i];
             }
 
-            std::sort(begin(vertices), end(vertices));
+            // std::sort(begin(vertices), end(vertices));
 
         } // NoGoZone()
 
-        /*
-        *   Note: operator< is used by std::sort() and compares
-        *   vertices[0] of each NoGoZone object.
-        *   As such, it relies on the no-go zone coordinates being
-        *   inputted in the following order:
-        *   
-        *   3 -- 0
-        *   |    |
-        *   2 -- 1
-        *   
-        *   (i.e. in the same clockwise manner as quadrants on a 2-D plane)
-        */
+        // /*
+        // *   Note: operator< is used by std::sort() and compares
+        // *   vertices[0] of each NoGoZone object.
+        // *   As such, it relies on the no-go zone coordinates being
+        // *   inputted in the following order:
+        // *   
+        // *   3 -- 0
+        // *   |    |
+        // *   2 -- 1
+        // *   
+        // *   (i.e. in the same clockwise manner as quadrants on a 2-D plane)
+        // */
         bool operator<(const NoGoZone &rhs) const {
         
             if(vertices[0].x == rhs.vertices[0].x) {
@@ -253,10 +254,10 @@ private:
 
         int x = c.x;
         int y = c.y;
-        int xMin = n.vertices[3].x;
-        int xMax = n.vertices[0].x;
-        int yMin = n.vertices[2].y;
-        int yMax = n.vertices[1].y;
+        int xMin = (n.vertices[3].x < n.vertices[0].x) ? n.vertices[3].x : n.vertices[0].x;
+        int xMax = (n.vertices[3].x > n.vertices[0].x) ? n.vertices[3].x : n.vertices[0].x;
+        int yMin = (n.vertices[2].y < n.vertices[1].y) ? n.vertices[2].y : n.vertices[1].y;
+        int yMax = (n.vertices[2].y > n.vertices[1].y) ? n.vertices[2].y : n.vertices[1].y;
 
         // Intialized as being inside the no-go zone
         OutCode code = CentralCentral;
@@ -291,95 +292,19 @@ private:
 
         // Temporary variables to maintain consistency with the
         // Wikipedia implementation
-        int xMin = n.vertices[3].x;
-        int xMax = n.vertices[0].x;
-        int yMin = n.vertices[2].y;
-        int yMax = n.vertices[1].y;
+        int xMin = (n.vertices[3].x < n.vertices[0].x) ? n.vertices[3].x : n.vertices[0].x;
+        int xMax = (n.vertices[3].x > n.vertices[0].x) ? n.vertices[3].x : n.vertices[0].x;
+        int yMin = (n.vertices[2].y < n.vertices[1].y) ? n.vertices[2].y : n.vertices[1].y;
+        int yMax = (n.vertices[2].y > n.vertices[1].y) ? n.vertices[2].y : n.vertices[1].y;
         // These are the intersection points
         int x0 = c0.x;
-        int x1 = c1.x;
         int y0 = c0.y;
+        int x1 = c1.x;
         int y1 = c1.y;
 
         // Resetting the last values
         lastAdditionalPoints.clear();
         lastNoGoIntersect = false;
-
-        while(true) {
-
-            // In this implementation, there cannot be any points inside the
-            // no-go zone, thus the following test is commented out:
-
-            // If the bitwise OR of the two outcodes is 0, both points are
-            // inside the no-go zone
-            // if(!(outcode0 | outcode1)) {
-            //     break;
-            // }
-
-            // If the bitwise AND of outcode0 and outcode1 is not 0,
-            // both points must share a zone outside the no-go zone and thus
-            // the line segement they create does not intersect the
-            // NoGoZone n
-            if(outcode0 & outcode1) {
-                return;
-            }
-
-            int x = -1;
-            int y = -1;
-
-            // Choosing the point outside the no-go zone
-            // Because both points are outside the no-go zone in this 
-            // implementation, the point is chosen arbitrarily
-            // (this does not matter, we simply need a starting point)
-            OutCode outCodeOut = (outcode1 > outcode0) ? outcode1 : outcode0;
-
-            // Finding the intersection points using the formulae:
-            // slope = (y1 - y0) / (x1 - x0)
-            // x = x0 + (1 / slope) * (ym - y0) {where ym is yMin or yMax}
-            // y = y0 + slope * (xm - x0) {where xm is xMin or xMax}
-            // Dividing by 0 is not possible here as the opcode bit being tested
-            // guarantees a non-zero denominator
-
-            // Integer division is used - this is not a mistake
-
-            // Above the no-go zone
-            if(outCodeOut & TopCentral) {
-                x = x0 + (x1 - x0) * (yMax -y0) / (y1 - y0);
-                y = yMax;
-            }
-            // Below the no-go zone
-            else if(outCodeOut & BottomCentral) {
-                x = x0 + (x1 - x0) * (yMin - y0) / (y1 - y0);
-				y = yMin;
-            }
-            // To the right of the no-go zone
-            else if(outCodeOut & CentralRight) {
-				y = y0 + (y1 - y0) * (xMax - x0) / (x1 - x0);
-				x = xMax;
-            }
-            // To the left of the no-go zone
-            else if(outCodeOut & CentralLeft) {
-				y = y0 + (y1 - y0) * (xMin - x0) / (x1 - x0);
-				x = xMin;
-            }
-
-            // Moving on to the next point
-            if(outCodeOut == outcode0){
-                x0 = x;
-                y0 = y;
-                outcode0 = computeOutCode(n, Coord(x0, y0));
-            }
-            else {
-                x1 = x;
-                y1 = y;
-                outcode1 = computeOutCode(n, Coord(x1, y1));
-            }
-
-        } // while
-
-        lastNoGoIntersect = true;
-        outcode0 = computeOutCode(n, c0);
-        outcode1 = computeOutCode(n, c1);
 
         // Cases where the points are directly across a no-go zone
         // Directly above/below
@@ -391,6 +316,8 @@ private:
                 lastAdditionalPoints.push_back(Coord(xMin, yMin));
                 lastAdditionalPoints.push_back(Coord(xMin, yMax));
                 lastAdditionalPoints.push_back(Coord(x0, yMax));
+                lastNoGoIntersect = true;
+                return;
             }
             // The drone will travel left-down
             else {
@@ -398,6 +325,8 @@ private:
                 lastAdditionalPoints.push_back(Coord(xMax, yMax));
                 lastAdditionalPoints.push_back(Coord(xMax, yMin));
                 lastAdditionalPoints.push_back(Coord(x0, yMin));
+                lastNoGoIntersect = true;
+                return;
             }
         }
 
@@ -410,6 +339,8 @@ private:
                 lastAdditionalPoints.push_back(Coord(xMin, yMax));
                 lastAdditionalPoints.push_back(Coord(xMax, yMax));
                 lastAdditionalPoints.push_back(Coord(xMax, y0));
+                lastNoGoIntersect = true;
+                return;
             }
             // The drone will travel down-left
             else {
@@ -417,6 +348,8 @@ private:
                 lastAdditionalPoints.push_back(Coord(xMax, yMin));
                 lastAdditionalPoints.push_back(Coord(xMin, yMin));
                 lastAdditionalPoints.push_back(Coord(xMin, y0));
+                lastNoGoIntersect = true;
+                return;
             }
         }
 
@@ -428,6 +361,8 @@ private:
             lastAdditionalPoints.push_back(Coord(xMin, yMax));
             lastAdditionalPoints.push_back(Coord(xMax, yMax));
             lastAdditionalPoints.push_back(Coord(xMax, y1));
+            lastNoGoIntersect = true;
+            return;
         }
         else if((outcode0 == TopCentral || outcode1 == TopCentral) \
             && (outcode0 == BottomCentral || outcode1 == BottomCentral)) {
@@ -435,100 +370,181 @@ private:
             lastAdditionalPoints.push_back(Coord(xMin, yMax));
             lastAdditionalPoints.push_back(Coord(xMin, yMin));
             lastAdditionalPoints.push_back(Coord(xMin, y0));
+            lastNoGoIntersect = true;
+            return;
         }
-        
-        // All other cases
-        else {
-            bool right = (x0 < x1);
-            bool up = (y0 < y1);
 
-            if(right && up) {
+        while(true) {
 
-                switch(outcode0) {
+            // In this implementation, there cannot be any points inside the
+            // no-go zone, thus the following test is commented out:
 
-                    case CentralLeft: {
-                        lastAdditionalPoints.push_back(Coord(xMin, y0));
-                        lastAdditionalPoints.push_back(Coord(xMin, yMax));
-                        lastAdditionalPoints.push_back(Coord(x1, yMax));
-                        break;
-                    }
-                    case BottomCentral: {
-                        lastAdditionalPoints.push_back(Coord(x0, yMin));
-                        lastAdditionalPoints.push_back(Coord(xMax, yMin));
-                        lastAdditionalPoints.push_back(Coord(xMax, y1));
-                        break;
-                    }
+            // If the bitwise OR of the two outcodes is 0, both points are
+            // inside the no-go zone
+            if(!(outcode0 | outcode1)) {
+                lastNoGoIntersect = true;
+                break;
+            }
 
-                } // switch
+            // If the bitwise AND of outcode0 and outcode1 is not 0,
+            // both points must share a zone outside the no-go zone and thus
+            // the line segement they create does not intersect the
+            // NoGoZone n
+            else if(outcode0 & outcode1) {
+                break;
+            }
 
-            } // if
+            else  {
 
-            else if(right && !up) {
+                int x, y;
+                // Choosing the point outside the no-go zone
+                // Because both points are outside the no-go zone in this 
+                // implementation, the point is chosen arbitrarily
+                // (this does not matter, we simply need a starting point)
+                OutCode outCodeOut = (outcode1 > outcode0) ? outcode1 : outcode0;
 
-                switch(outcode0) {
+                // Finding the intersection points using the formulae:
+                // slope = (y1 - y0) / (x1 - x0)
+                // x = x0 + (1 / slope) * (ym - y0) {where ym is yMin or yMax}
+                // y = y0 + slope * (xm - x0) {where xm is xMin or xMax}
+                // Dividing by 0 is not possible here as the opcode bit being tested
+                // guarantees a non-zero denominator
 
-                    case TopCentral: {
-                        lastAdditionalPoints.push_back(Coord(x0, yMax));
-                        lastAdditionalPoints.push_back(Coord(xMax, yMax));
-                        lastAdditionalPoints.push_back(Coord(xMax, y1));
-                        break;
-                    }
-                    case CentralLeft: {
-                        lastAdditionalPoints.push_back(Coord(xMin, y0));
-                        lastAdditionalPoints.push_back(Coord(xMin, yMin));
-                        lastAdditionalPoints.push_back(Coord(x1, yMin));
-                        break;
-                    }
-                    
-                } // switch
+                // Integer division is used - this is not a mistake
 
-            } // else if
+                // Above the no-go zone
+                if(outCodeOut & TopCentral) {
+                    x = x0 + (x1 - x0) * (yMax -y0) / (y1 - y0);
+                    y = yMax;
+                }
+                // Below the no-go zone
+                else if(outCodeOut & BottomCentral) {
+                    x = x0 + (x1 - x0) * (yMin - y0) / (y1 - y0);
+                    y = yMin;
+                }
+                // To the right of the no-go zone
+                else if(outCodeOut & CentralRight) {
+                    y = y0 + (y1 - y0) * (xMax - x0) / (x1 - x0);
+                    x = xMax;
+                }
+                // To the left of the no-go zone
+                else if(outCodeOut & CentralLeft) {
+                    y = y0 + (y1 - y0) * (xMin - x0) / (x1 - x0);
+                    x = xMin;
+                }
 
-            else if(!right && up) {
+                // Moving on to the next point
+                if(outCodeOut == outcode0){
+                    x0 = x;
+                    y0 = y;
+                    outcode0 = computeOutCode(n, Coord(x0, y0));
+                }
+                else {
+                    x1 = x;
+                    y1 = y;
+                    outcode1 = computeOutCode(n, Coord(x1, y1));
+                }
 
-                switch(outcode0) {
-                    
-                    case BottomCentral: {
-                        lastAdditionalPoints.push_back(Coord(x0, yMin));
-                        lastAdditionalPoints.push_back(Coord(xMin, yMin));
-                        lastAdditionalPoints.push_back(Coord(xMin, y1));
-                        break;
-                    }
+            } // else
 
-                    case CentralRight: {
-                        lastAdditionalPoints.push_back(Coord(xMax, y0));
-                        lastAdditionalPoints.push_back(Coord(xMax, yMax));
-                        lastAdditionalPoints.push_back(Coord(x1, yMax));
-                        break;
-                    }
+        } // while
 
-                } // switch
-
-            } // else if
-
-            else { // (!right && !up)
-
-                switch(outcode0) {
-
-                    case TopCentral: {
-                        lastAdditionalPoints.push_back(Coord(x0, yMax));
-                        lastAdditionalPoints.push_back(Coord(xMin, yMax));
-                        lastAdditionalPoints.push_back(Coord(xMin, y1));
-                        break;
-                    }
-
-                    case CentralRight: {
-                        lastAdditionalPoints.push_back(Coord(xMax, y0));
-                        lastAdditionalPoints.push_back(Coord(xMax, yMin));
-                        lastAdditionalPoints.push_back(Coord(x0, yMin));
-                        break;
-                    }
-
-                } // switch
-
-            } // else 
-
+        if(!lastNoGoIntersect) {
+            return;
         }
+
+        lastNoGoIntersect = true;
+        outcode0 = computeOutCode(n, c0);
+        outcode1 = computeOutCode(n, c1);
+
+        bool right = (x0 < x1);
+        bool up = (y0 < y1);
+
+        if(right && up) {
+
+            switch(outcode0) {
+
+                case CentralLeft: {
+                    lastAdditionalPoints.push_back(Coord(xMin, y0));
+                    lastAdditionalPoints.push_back(Coord(xMin, yMax));
+                    lastAdditionalPoints.push_back(Coord(x1, yMax));
+                    break;
+                }
+                case BottomCentral: {
+                    lastAdditionalPoints.push_back(Coord(x0, yMin));
+                    lastAdditionalPoints.push_back(Coord(xMax, yMin));
+                    lastAdditionalPoints.push_back(Coord(xMax, y1));
+                    break;
+                }
+
+            } // switch
+
+        } // if
+
+        else if(right && !up) {
+
+            switch(outcode0) {
+
+                case TopCentral: {
+                    lastAdditionalPoints.push_back(Coord(x0, yMax));
+                    lastAdditionalPoints.push_back(Coord(xMax, yMax));
+                    lastAdditionalPoints.push_back(Coord(xMax, y1));
+                    break;
+                }
+                case CentralLeft: {
+                    lastAdditionalPoints.push_back(Coord(xMin, y0));
+                    lastAdditionalPoints.push_back(Coord(xMin, yMin));
+                    lastAdditionalPoints.push_back(Coord(x1, yMin));
+                    break;
+                }
+                
+            } // switch
+
+        } // else if
+
+        else if(!right && up) {
+
+            switch(outcode0) {
+                
+                case BottomCentral: {
+                    lastAdditionalPoints.push_back(Coord(x0, yMin));
+                    lastAdditionalPoints.push_back(Coord(xMin, yMin));
+                    lastAdditionalPoints.push_back(Coord(xMin, y1));
+                    break;
+                }
+
+                case CentralRight: {
+                    lastAdditionalPoints.push_back(Coord(xMax, y0));
+                    lastAdditionalPoints.push_back(Coord(xMax, yMax));
+                    lastAdditionalPoints.push_back(Coord(x1, yMax));
+                    break;
+                }
+
+            } // switch
+
+        } // else if
+
+        else { // (!right && !up)
+
+            switch(outcode0) {
+
+                case TopCentral: {
+                    lastAdditionalPoints.push_back(Coord(x0, yMax));
+                    lastAdditionalPoints.push_back(Coord(xMin, yMax));
+                    lastAdditionalPoints.push_back(Coord(xMin, y1));
+                    break;
+                }
+
+                case CentralRight: {
+                    lastAdditionalPoints.push_back(Coord(xMax, y0));
+                    lastAdditionalPoints.push_back(Coord(xMax, yMin));
+                    lastAdditionalPoints.push_back(Coord(x0, yMin));
+                    break;
+                }
+
+            } // switch
+
+        } // else 
 
     } // CohenSutherland()
 
@@ -545,6 +561,11 @@ private:
 
             for(size_t j = 0; j < distmat[i].size(); ++j) {
 
+                if(i == j) {
+                    distmat[i][j].second = std::numeric_limits<double>::infinity();
+                    continue;
+                }
+
                 for(size_t k = 0; k < noGoZones.size(); ++k) {
 
                     // Checking intersections with no-go zones
@@ -557,14 +578,17 @@ private:
 
                 } // for k
 
-                distmat[i][j].second += euclideanDist(coords[i], coords[j]);
+                if(!distmat[i][j].first.size()) {
+                    distmat[i][j].second += euclideanDist(coords[i], coords[j]);
+                }
+                
+                else {
 
-                if(distmat[i][j].first.size()) {
 
                     distmat[i][j].second += euclideanDist(coords[i], distmat[i][j].first[0]);
 
                     // Adding the additional points required to traverse the no-go zone
-                    for(size_t k = 0; k < distmat[i][j].first.size() - 1; ++i) {
+                    for(size_t k = 0; k < distmat[i][j].first.size() - 1; ++k) {
                         distmat[i][j].second += euclideanDist(distmat[i][j].first[i], distmat[i][j].first[i + 1]);
                     }
 
@@ -679,6 +703,7 @@ private:
 
     } // findMinInsertionIdx()
 
+
     void calcTotalDist() {
 
         for(size_t i = 0; i < path.size(); ++i) {
@@ -733,6 +758,7 @@ private:
         calcTotalDist();
 
     } // fastTSP()
+
 
     // returns true if inserting a point is promising
     // i.e. is (sDist + eDist + distSoFar + mstDist < optDist)
@@ -826,7 +852,20 @@ private:
 
             } // for j
 
+            std::cout << coords[optPath[i + 1]].x << " " << coords[optPath[i + 1]].y << '\n';
+
         } // for i
+
+        // Printing out the last link
+        const auto &dm = distmat[optPath[optPath.size() - 1]][optPath[0]].first;
+
+        for(size_t i = 0; i < dm.size(); ++i) {
+
+            std::cout << dm[i].x << " " << dm[i].y << '\n';
+
+        }
+
+        std::cout << coords[0].x << " " << coords[0].y << '\n';
 
     } // optimalTSP()
 

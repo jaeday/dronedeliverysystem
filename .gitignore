@@ -1,4 +1,8 @@
 route
+route_debug
+tsp
+test*.txt
+out*.txt
 *.o
 *.dSYm
-
+/.vscode
