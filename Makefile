@@ -9,7 +9,7 @@ all:
 	$(CXX) $(CXXFLAGS) $(SRCFILE) -o $(EXECUTABLE)
 
 clean:
-	rm $(OBJECTS) $(EXECUTABLE) $(DEBUG_EXECUTABLE) out*.txt
+	rm $(OBJECTS) $(EXECUTABLE) $(DEBUG_EXECUTABLE) out*.txt $(shell pwd)/routeplanning/tsp
 
 debug:
 	$(CXX) -std=c++1z -g3 -Wall -Werror -pedantic $(SRCFILE) -o $(DEBUG_EXECUTABLE)
