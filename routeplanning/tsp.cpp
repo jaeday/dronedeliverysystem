@@ -570,26 +570,30 @@ private:
 
                     // Checking intersections with no-go zones
                     CohenSutherland(noGoZones[k], coords[i], coords[j]);
+
                     // Concatenating intersection points
                     if(lastNoGoIntersect) {
                         distmat[i][j].first.insert(end(distmat[i][j].first), \
-                            begin(lastAdditionalPoints), end(lastAdditionalPoints));
+                            begin(lastAdditionalPoints), \
+                            end(lastAdditionalPoints));
                     }
 
                 } // for k
 
-                if(!distmat[i][j].first.size()) {
-                    distmat[i][j].second += euclideanDist(coords[i], coords[j]);
+                // If there was no intersection with any no-go
+                if(!lastNoGoIntersect) {
+                    distmat[i][j].second += \
+                        euclideanDist(coords[i], coords[j]);
                 }
                 
                 else {
 
-
-                    distmat[i][j].second += euclideanDist(coords[i], distmat[i][j].first[0]);
+                    distmat[i][j].second += \ 
+                        euclideanDist(coords[i], distmat[i][j].first[0]);
 
                     // Adding the additional points required to traverse the no-go zone
                     for(size_t k = 0; k < distmat[i][j].first.size() - 1; ++k) {
-                        distmat[i][j].second += euclideanDist(distmat[i][j].first[i], distmat[i][j].first[i + 1]);
+                        distmat[i][j].second += euclideanDist(distmat[i][j].first[k], distmat[i][j].first[k + 1]);
                     }
 
                     distmat[i][j].second += euclideanDist(distmat[i][j].first[distmat[i][j].first.size() - 1], coords[j]);

@@ -62,7 +62,7 @@ class Nav:
         # 180°
         elif currentCoord.x == nextCoord.x and currentCoord.y > nextCoord.y:
             return 180
-        # 90° Counterclockwise
+        # 90° Counterclockwise4
         elif currentCoord.x > nextCoord.x and currentCoord.y == nextCoord.y:
             return -90
 
@@ -89,12 +89,12 @@ class Nav:
         if xDistPos and yDistPos:
             pass
         elif xDistPos and not yDistPos:
-            rotAngle += 90
+            rotAngle = 180 - rotAngle
         elif not xDistPos and yDistPos:
             rotAngle *= -1
-        # not xDistPos and yDistPos
+        # not xDistPos and not yDistPos
         else:
-            rotAngle -= 90
+            rotAngle += 180
 
         return rotAngle
 
@@ -127,6 +127,7 @@ class Nav:
         currentCoord = self.coords[-1]
         nextCoord = self.coords[0]
         rotation = self.calculateRot(currentCoord, nextCoord)
+        self.lastRot = rotation
         currentCoordPair = (currentCoord.x, currentCoord.y)
         nextCoordPair = (nextCoord.x, nextCoord.y)
         dist = distance.euclidean(currentCoordPair, nextCoordPair)
