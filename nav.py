@@ -14,6 +14,7 @@ class Point:
     x: float
     y: float
 
+DEBUG = False
 
 class Nav:
 
@@ -138,10 +139,11 @@ class Nav:
         # rounded to 2 decimal places
         count = 0
         for i in self.rotations:
-            print(count, (round(i[0], 2), round(i[1], 2)))
+            if DEBUG:
+                print(count, (round(i[0], 2), round(i[1], 2)))
+            print(str(round(i[0], 2)) + " " + str(round(i[1], 2)))
             count += 1
-        print("")
-
+            
 # Counter variable
 i = 1
 

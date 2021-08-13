@@ -32,4 +32,4 @@ for file in os.listdir(inputPath):
 os.system("make clean")
 
 # Runs nav.py and sends the output to path.txt
-os.system("nav.py > path.txt")
+os.system("python3 nav.py > path.txt")
