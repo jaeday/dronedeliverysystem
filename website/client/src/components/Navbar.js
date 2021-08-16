@@ -13,7 +13,7 @@ export default function Navbar() {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div className="navbar-nav ms-auto">
-                        <a className="nav-item nav-link" href="#">Login <span className="sr-only"></span></a>
+                        <a className="nav-item nav-link" href="/login">Login <span className="sr-only"></span></a>
                         <a className="nav-item nav-link" href="/cart">Cart {cartstate.cartItems.length}</a>
                     </div>
                 </div>

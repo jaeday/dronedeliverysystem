@@ -1,6 +1,7 @@
 const express = require("express");
 const Coffee = require('./models/coffeeModel')
 const coffeesRoute = require('./routes/coffeesRoute')
+const userRoute = require('./routes/userRoute')
 
 const db = require("./db");
 
@@ -13,6 +14,7 @@ app.get("/", (req,res) => {
 });
 
 app.use('/api/coffees', coffeesRoute)
+app.use('/api/users/', userRoute)
 
 const port = process.env.PORT || 8000;
 
