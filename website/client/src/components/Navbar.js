@@ -1,9 +1,13 @@
 import React from 'react'
-import {useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { addToCart } from '../actions/cartActions'
 
+
 export default function Navbar() {
-    const cartstate = useSelector(state=>state.cartReducer)
+    const cartstate = useSelector(state => state.cartReducer)
+    const userstate = useSelector(state => state.loginUserReducer)
+    const { currentUser } = userstate
+
     return (
         <div>
             <nav className="navbar navbar-expand-lg shadow-lg p-3 mb-5 bg-white rounded">
@@ -13,7 +17,16 @@ export default function Navbar() {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div className="navbar-nav ms-auto">
-                        <a className="nav-item nav-link" href="/login">Login <span className="sr-only"></span></a>
+                        {currentUser ? (<div class="dropdown mt-2">
+                            <a style={{color: 'black'}} className="dropdown-toggle " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {currentUser.name}
+                            </a>
+                            <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a className="dropdown-item" href="#">Orders</a>
+                                <a className="dropdown-item" href="#">Logout</a>
+                            </div>
+                        </div>) :
+                            (<a className="nav-item nav-link" href="/login">Login <span className="sr-only"></span></a>)}
                         <a className="nav-item nav-link" href="/cart">Cart {cartstate.cartItems.length}</a>
                     </div>
                 </div>

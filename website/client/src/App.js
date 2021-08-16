@@ -7,6 +7,7 @@ import Homescreen from './screens/Homescreen';
 import Cartscreen from './screens/Cartscreen';
 import Registerscreen from './screens/Registerscreen';
 import Loginscreen from './screens/Loginscreen';
+import 'bootstrap';
 
 function App() {
   return (
