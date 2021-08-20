@@ -53,6 +53,10 @@ select{
   margin: 5px;
 }
 
+.fa-map-marker-alt{
+  size: 1000px;
+}
+
 input{
   margin-top: 10px !important;
   box-shadow: none !important;
@@ -62,4 +66,19 @@ input{
   margin:auto;
   width: 100%;
   padding: 10px;
+  }
+
+  .marker {
+    background-image: url('./mapmarker.png');
+    background-size: cover;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .btn-small{
+    background-color: red !important;
+    color: white !important;
+    font-size:8px !important;
   }

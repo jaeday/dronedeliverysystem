@@ -5,7 +5,9 @@ import { deleteFromCart } from '../actions/cartActions'
 import Checkout from '../components/Checkout'
 import Map from '../components/Map'
 import MapGl from 'mapbox-gl';
+import ReactMapGL, {Marker} from 'react-map-gl'
 import '../index.css'
+import MapView from '../components/Map'
 
 export default function Cartscreen() {
 
@@ -17,12 +19,12 @@ export default function Cartscreen() {
 
 
     return (
-        <div className = "container center">
+        <div className = "container center overflow-scroll">
             <h2>Select delivery location:</h2>
-                <div className="row " style={{height:'600px', width: '1200px', marginLeft:'30px' }}>
-                    <Map />
+                <div className="row ">
+                    <MapView />
                 </div>
-            <div className="row" style={{paddingTop: '30px'}}>
+            <div className="row" style={{paddingTop: '100px'}}>
                 <div className="col">
                     <h2 style={{ fontSize: '40px' , paddingTop: '10px'}}>My Cart</h2>
                     {cartItems.map(item => {

@@ -2,53 +2,101 @@ import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import './Map.css';
 import geoJson from './MapMarkers.json';
+import { PureComponent } from 'react';
+import ReactMapGL, { Popup } from 'react-map-gl';
+import Geocoder from 'react-mapbox-gl-geocoder';
+import { Container, Col, Row, Button } from 'reactstrap';
 
 
-mapboxgl.accessToken =
-    'pk.eyJ1IjoiamFlZGF5IiwiYSI6ImNrc2ljMTNyeTA0c3gzMnAwcHgyaGViaWgifQ.zurLLuNDk452jDGmEAA8mg';
-
-const Map = () => {
-    const mapContainerRef = useRef(null);
-
-    const [lng, setLng] = useState(-83.7381);
-    const [lat, setLat] = useState(42.2772);
-    const [zoom, setZoom] = useState(16.27);
 
 
-    // Initialize map when component mounts
-    useEffect(() => {
-        const map = new mapboxgl.Map({
-            container: mapContainerRef.current,
-            style: 'mapbox://styles/mapbox/streets-v11',
-            center: [lng, lat],
-            width: 0,
-            height: 0,
-            latitude: 42.2772,
-            longitude: -83.7381,
-            zoom: 16,
-            attributionControl: false
-        });
+const mapStyle = {
+    width: '100%',
+    height: 600
+}
 
-        // Add navigation control (the +/- zoom buttons)
-        map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+const mapboxApiKey = 'pk.eyJ1IjoiamFlZGF5IiwiYSI6ImNrc2ljMTNyeTA0c3gzMnAwcHgyaGViaWgifQ.zurLLuNDk452jDGmEAA8mg';
 
-        map.on('move', () => {
-            setLng(map.getCenter().lng.toFixed(4));
-            setLat(map.getCenter().lat.toFixed(4));
-            setZoom(map.getZoom().toFixed(2));
-        });
+const params = {
+    country: "ca"
+}
 
-        geoJson.features.map((feature) =>
-            new mapboxgl.Marker().setLngLat(feature.geometry.coordinates).addTo(map)
+const delivery = {
+    location: ""
+}
+
+function locationSelect(locationInput){
+    localStorage.setItem('location', locationInput);
+}
+
+
+
+class MapView extends PureComponent {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            viewport: {
+                latitude: 42.2772,
+                longitude: -83.7381,
+                zoom: 16
+            },
+            tempMarker: null,
+            markers: []
+        };
+
+    }
+
+    
+
+    render() {
+        const { viewport, tempMarker, markers } = this.state;
+        return (
+            <Container fluid={true} style={{ height: '600px', width: '1200px', marginLeft: '30px' }}>
+                <Row className="py-4">
+                    <Col xs={2}>
+                        <Geocoder
+                            mapboxApiAccessToken={mapboxApiKey}
+                            onSelected={this.onSelected}
+                            viewport={viewport}
+                            hideOnSelect={true}
+                            value=""
+                        />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <ReactMapGL
+                            mapboxApiAccessToken={mapboxApiKey}
+                            mapStyle="mapbox://styles/mapbox/streets-v11"
+                            {...viewport}
+                            {...mapStyle}
+                            onViewportChange={(viewport) => this.setState({ viewport })}
+                        >
+
+                            {
+                                geoJson.features.map((feature) => {
+                                    return (
+                                        <Popup
+                                            closeButton={true}
+                                            closeOnClick={false}
+                                            longitude={feature.geometry.coordinates[1]}
+                                            latitude={feature.geometry.coordinates[0]}>
+                                            <h3 style={{ fontSize: '10px' }}>{feature.properties.description}</h3>
+                                            <button className="btn-small" onClick={() => locationSelect(feature.properties.title)}>Order Here</button>
+                                        </Popup>
+                                    )
+                                })
+                            }
+                        </ReactMapGL>
+                    </Col>
+                </Row>
+            </Container>
         );
+    }
+}
 
-        // Clean up on unmount
-        return () => map.remove();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+export default MapView;
 
-    return (
-        <div className="col mapbox-logo" ref={mapContainerRef} />
-    );
-};
 
-export default Map;
+
