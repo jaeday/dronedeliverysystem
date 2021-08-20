@@ -16,8 +16,6 @@ export default function Cartscreen() {
     const dispatch = useDispatch()
     var subtotal = cartItems.reduce((x, item) => x + item.price, 0)
 
-
-
     return (
         <div className = "container center overflow-scroll">
             <h2>Select delivery location:</h2>
@@ -60,11 +58,16 @@ export default function Cartscreen() {
                 </div>
                 
             </div>
+
+            <div className="row center"> 
+                    <h2 style={{ fontSize: '45px' ,paddingTop: '50px'}}>Delivery to : {localStorage.getItem('location')}</h2>
+                </div>
                 
                 <div className="row center" style={{height:'200px', width: '1200px', marginLeft: '48px'}}>
                     <h2 style={{ fontSize: '45px' ,paddingTop: '50px'}}>SubTotal: ${subtotal}</h2>
-                    <Checkout subtotal={subtotal} />
+                    <Checkout subtotal={subtotal}/>
                 </div>
+                
             
 
         </div>

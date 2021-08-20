@@ -16,10 +16,6 @@ const mapStyle = {
 
 const mapboxApiKey = 'pk.eyJ1IjoiamFlZGF5IiwiYSI6ImNrc2ljMTNyeTA0c3gzMnAwcHgyaGViaWgifQ.zurLLuNDk452jDGmEAA8mg';
 
-const params = {
-    country: "ca"
-}
-
 const delivery = {
     location: ""
 }

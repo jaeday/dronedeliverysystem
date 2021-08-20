@@ -81,4 +81,5 @@ input{
     background-color: red !important;
     color: white !important;
     font-size:8px !important;
+    border-radius: 2px !important;
   }
