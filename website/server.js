@@ -14,9 +14,9 @@ app.get("/", (req,res) => {
     res.send("Server working " + port);
 });
 
-app.use('/api/coffees', coffeesRoute)
+app.use('/api/coffees/', coffeesRoute)
 app.use('/api/users/', userRoute)
-app.use('/api/orders', ordersRoute)
+app.use('/api/orders/', ordersRoute)
 
 const port = process.env.PORT || 8000;
 
