@@ -4,7 +4,6 @@ import './Map.css';
 import geoJson from './MapMarkers.json';
 import { PureComponent } from 'react';
 import ReactMapGL, { Popup } from 'react-map-gl';
-import Geocoder from 'react-mapbox-gl-geocoder';
 import { Container, Col, Row, Button } from 'reactstrap';
 
 
@@ -53,17 +52,6 @@ class MapView extends PureComponent {
         const { viewport, tempMarker, markers } = this.state;
         return (
             <Container fluid={true} style={{ height: '600px', width: '1200px', marginLeft: '30px' }}>
-                <Row className="py-4">
-                    <Col xs={2}>
-                        <Geocoder
-                            mapboxApiAccessToken={mapboxApiKey}
-                            onSelected={this.onSelected}
-                            viewport={viewport}
-                            hideOnSelect={true}
-                            value=""
-                        />
-                    </Col>
-                </Row>
                 <Row>
                     <Col>
                         <ReactMapGL
