@@ -7,9 +7,13 @@ import Map from '../components/Map'
 import MapGl from 'mapbox-gl';
 import ReactMapGL, {Marker} from 'react-map-gl'
 import '../index.css'
+import AOS from 'aos'
+import 'aos/dist/aos.css';
 import MapView from '../components/Map'
 
 export default function Cartscreen() {
+
+    AOS.init()
 
     const cartstate = useSelector(state => state.cartReducer)
     const cartItems = cartstate.cartItems
@@ -17,7 +21,7 @@ export default function Cartscreen() {
     var subtotal = cartItems.reduce((x, item) => x + item.price, 0)
 
     return (
-        <div className = "container center overflow-scroll">
+        <div className = "container center overflow-scroll" data-aos='fade-down'>
             <h2>Select delivery location:</h2>
                 <div className="row ">
                     <MapView />

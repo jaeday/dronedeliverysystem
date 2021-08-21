@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "aos": "^2.3.4",
     "bootstrap": "^5.1.0",
     "react-mapbox-gl-geocoder": "^1.1.0"
   }

@@ -16,9 +16,19 @@ export default function Registerscreen() {
 
     const dispatch = useDispatch()
 
+    function validateEmail(email) 
+    {
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    }
+
     function register(){
         if(password!=cpassword){
             alert("Passwords not matching!")
+        }
+        else if (!validateEmail(email)){
+            alert("Please enter a valid email!")
+
         }
         else{
             const user = {
@@ -43,8 +53,8 @@ export default function Registerscreen() {
                     <div>
                         <input required type="text" placeholder="name" className="form-control" value ={name} onChange={(e)=>{setname(e.target.value)}}/>
                         <input required type="text" placeholder="email" className="form-control" value ={email} onChange={(e)=>{setemail(e.target.value)}}/>
-                        <input required type="text" placeholder="password" className="form-control" value ={password} onChange={(e)=>{setpassword(e.target.value)}}/>
-                        <input required type="text" placeholder="confirm password" className="form-control" value ={cpassword} onChange={(e)=>{setcpassword(e.target.value)}}/>
+                        <input required type="password" placeholder="password" className="form-control" value ={password} onChange={(e)=>{setpassword(e.target.value)}}/>
+                        <input required type="password" placeholder="confirm password" className="form-control" value ={cpassword} onChange={(e)=>{setcpassword(e.target.value)}}/>
                         <button onClick ={register} className="btn mt-3 mb-3">Register</button>
                         <br></br>
                         <a style = {{color:'black'}}href="/login" className ="mt-2">Click Here To Login</a>
