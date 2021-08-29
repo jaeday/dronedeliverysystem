@@ -22,6 +22,7 @@ const delivery = {
 
 function locationSelect(locationInput){
     localStorage.setItem('location', locationInput);
+    
 }
 
 

@@ -11,8 +11,9 @@ export default function Checkout({subtotal}) {
     const {loading, error, success} = orderstate
     const dispatch = useDispatch()
     function tokenHandler(token){
+        var dest = localStorage.getItem('location')
         console.log(token);
-        dispatch(placeOrder(token, subtotal))
+        dispatch(placeOrder(token, subtotal, dest))
 
     }
     return (

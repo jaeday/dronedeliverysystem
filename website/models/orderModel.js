@@ -5,7 +5,7 @@ const orderSchema = mongoose.Schema({
     email : {type: String, require},
     userid : {type: String, require},
     orderItems : [],
-    shippingAddress : {type: Object},
+    shippingAddress : {type: String, require},
     orderAmount: { type: Number, require},
     isDelivered : {type:Boolean, require, default: false},
     transactionid :{type: String, require}
