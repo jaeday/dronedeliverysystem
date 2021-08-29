@@ -43,10 +43,7 @@ export default function Ordersscreen() {
                                    
                                 <h2 style={{fontSize:'25px'}}>Address</h2>
                                 <hr/>
-                                <p>Street : {order.shippingAddress.street}</p>
-                                <p>City : {order.shippingAddress.city}</p>
-                                <p>Country : {order.shippingAddress.country}</p>
-                                <p>Pincode : {order.shippingAddress.zipcode}</p>
+                                <p>Location : {order.shippingAddress}</p>
                                 </div>
                                 <div className='text-left w-100 m-1'>
                                 <h2 style={{fontSize:'25px'}}>Order Info</h2>
