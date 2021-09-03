@@ -2,8 +2,12 @@ import React, { useState } from 'react'
 import {Modal} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart } from '../actions/cartActions'
+import AOS from 'aos'
+import 'aos/dist/aos.css'
 
 export default function Coffee({ coffee }) {
+    AOS.init({
+    })
     const [quantity, setquantity] = useState(1)
     const [size, setsize] = useState('small')
     const [show, setShow] = useState(false);
@@ -17,7 +21,7 @@ export default function Coffee({ coffee }) {
     }
 
     return (
-        <div className='shadow-lg p-3 mb-5 bg-white rounded'>
+        <div data-aos = 'zoom-in'className='shadow-lg p-3 mb-5 bg-white rounded'>
             <div onClick ={handleShow}>
                 <h1>{coffee.name}</h1>
                 <img src={coffee.image} className="img-fluid" style={{ height: '200px', width: '200px' }} />

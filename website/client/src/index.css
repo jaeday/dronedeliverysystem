@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
 
-body {
+body, html {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -8,6 +8,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: 'Montserrat', sans-serif;
+  overflow-x: hidden !important;
 }
 
 .nav-link{
@@ -82,4 +83,9 @@ input{
     color: white !important;
     font-size:8px !important;
     border-radius: 2px !important;
+  }
+
+  .filterContainer{
+    margin: auto;
+    width: 70%
   }
