@@ -20,8 +20,8 @@ const delivery = {
     location: ""
 }
 
-function locationSelect(locationInput){
-    localStorage.setItem('location', locationInput);
+async function locationSelect(locationInput){
+    await localStorage.setItem('location', locationInput);
 }
 
 
